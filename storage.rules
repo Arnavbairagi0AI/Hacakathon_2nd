@@ -1,0 +1,49 @@
+rules_version = '2';
+/* =====================================================================
+   VentureSetu — Firebase Storage Security Rules (production)
+   ---------------------------------------------------------------------
+   /decks/{startupId}/...         pitch-deck PDFs
+     - READ   : the startup owner, OR an investor whose uid is listed in
+                that startup's deck.sharedWith (firestore.get cross-check)
+     - WRITE  : the startup owner only (upload, replace, delete)
+
+   /files/threads/{threadId}/...  attachments inside private rooms
+     - READ/WRITE : participants of the thread (pairIds contains uid)
+   ===================================================================== */
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isActiveMember(uid) {
+      let d = firestore.get(/databases/(default)/documents/users/$(uid));
+      return request.auth != null && d != null && d.data != null
+        && d.data.status == 'active'
+        && d.data.role in ['founder', 'investor', 'admin'];
+    }
+
+    /* ---------------------------- pitch decks ---------------------- */
+    match /decks/{startupId}/{fileName} {
+      function startup() {
+        return firestore.get(/databases/(default)/documents/startups/$(startupId));
+      }
+
+      allow read: if isActiveMember(request.auth.uid)
+        && (startup().data.ownerId == request.auth.uid
+            || request.auth.uid in startup().data.deck.sharedWith);
+
+      allow write: if isActiveMember(request.auth.uid)
+        && startup().data.ownerId == request.auth.uid;
+    }
+
+    /* ---------------------------- thread attachments --------------- */
+    match /files/threads/{threadId}/{msgId}/{fileName} {
+      allow read, write: if isActiveMember(request.auth.uid)
+        && firestore.get(/databases/(default)/documents/threads/$(threadId))
+             .data.pairIds.hasAny([request.auth.uid]);
+    }
+
+    /* ---------------------------- everything else: denied ---------- */
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

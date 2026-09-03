@@ -1,0 +1,671 @@
+{
+  "_comment": "Editorial + platform-config content for VentureSetu Firestore. Import with npm run seed:content -- --project <id> (see docs/FIREBASE.md). App code never reads this file.",
+  "events": [
+    {
+      "id": "ev-1",
+      "title": "VentureSetu Demo Day — Cohort VII",
+      "kind": "Demo Day",
+      "date": "Sat, 22 Mar 2025",
+      "time": "10:00 IST",
+      "where": "Virtual + Bengaluru hub",
+      "host": "VentureSetu",
+      "seats": 400,
+      "rsvpCount": 343,
+      "desc": "Nine curated startups across fintech, climate and AI present 6-minute pitches to 120+ verified investors with live Q&A and follow-up rooms.",
+      "tags": [
+        "Pitch",
+        "Seed",
+        "All sectors"
+      ],
+      "featured": true
+    },
+    {
+      "id": "ev-2",
+      "title": "Term Sheet Teardown — Live Redlining",
+      "kind": "Workshop",
+      "date": "Thu, 13 Mar 2025",
+      "time": "17:30 IST",
+      "where": "Virtual",
+      "host": "Ardent Peak × IndusLaw",
+      "seats": 150,
+      "rsvpCount": 127,
+      "desc": "A real seed term sheet redlined live by a partner and a startup lawyer. Liquidation prefs, anti-dilution, board constructs — explained line by line.",
+      "tags": [
+        "Legal",
+        "Fundraising"
+      ],
+      "featured": false
+    },
+    {
+      "id": "ev-3",
+      "title": "Fintech Founders × RBI Innovation Hub",
+      "kind": "Roundtable",
+      "date": "Tue, 18 Mar 2025",
+      "time": "15:00 IST",
+      "where": "Mumbai · BKC",
+      "host": "RBIH Community",
+      "seats": 60,
+      "rsvpCount": 52,
+      "desc": "Closed-door roundtable on the compliance sandbox journey — what the Hub expects from lending and payments applicants in 2025.",
+      "tags": [
+        "Fintech",
+        "Regulatory"
+      ],
+      "featured": false
+    },
+    {
+      "id": "ev-4",
+      "title": "Climate Capital Conclave — South Chapter",
+      "kind": "Conference",
+      "date": "Fri, 28 Mar 2025",
+      "time": "09:30 IST",
+      "where": "Chennai · IIT-MRP",
+      "host": "Sakhi Impact",
+      "seats": 220,
+      "rsvpCount": 116,
+      "desc": "Agri, EV and circular-economy founders meet 40 impact funds. Field-pilot showcases, blended-finance panels and 1:1 curated meetings.",
+      "tags": [
+        "Climate",
+        "AgriTech"
+      ],
+      "featured": false
+    },
+    {
+      "id": "ev-5",
+      "title": "Angel Syndicate Open House",
+      "kind": "Networking",
+      "date": "Wed, 12 Mar 2025",
+      "time": "19:00 IST",
+      "where": "Bengaluru · UB City",
+      "host": "K2 Angels",
+      "seats": 80,
+      "rsvpCount": 49,
+      "desc": "New-to-venture operators learn syndicate mechanics: carry, SPVs, and how pooled ₹50L–₹3Cr cheques are constructed.",
+      "tags": [
+        "Angels",
+        "First cheque"
+      ],
+      "featured": false
+    },
+    {
+      "id": "ev-6",
+      "title": "GAAP for Founders — Close the Books Faster",
+      "kind": "Masterclass",
+      "date": "Mon, 24 Mar 2025",
+      "time": "16:00 IST",
+      "where": "Virtual",
+      "host": "Ledgerly Academy",
+      "seats": 300,
+      "rsvpCount": 119,
+      "desc": "From 9-day closes to 36 hours: the exact workflow stack, controls and audit practices used by the fastest finance teams.",
+      "tags": [
+        "Finance",
+        "Ops"
+      ],
+      "featured": false
+    }
+  ],
+  "tracks": [
+    {
+      "id": "lt-1",
+      "title": "Seed Fundraising, End to End",
+      "level": "Core",
+      "mins": 240,
+      "lessons": 12,
+      "desc": "From narrative construction to data rooms, IC dynamics and closing mechanics — taught from the investor side of the table.",
+      "author": "Meera Krishnan · Ardent Peak",
+      "hue": 232,
+      "tags": [
+        "Fundraising",
+        "Seed"
+      ]
+    },
+    {
+      "id": "lt-2",
+      "title": "Financial Mastery for Non-Finance Founders",
+      "level": "Core",
+      "mins": 180,
+      "lessons": 9,
+      "desc": "Burn, runway, CAC/LTV, burn multiples, revenue recognition — the exact metrics investors will interrogate, with worksheets.",
+      "author": "Ledgerly Finance Guild",
+      "hue": 36,
+      "tags": [
+        "Finance",
+        "Metrics"
+      ]
+    },
+    {
+      "id": "lt-3",
+      "title": "The Pitch-Deck Studio",
+      "level": "Workshop",
+      "mins": 150,
+      "lessons": 7,
+      "desc": "Slide-by-slide archetypes for problem, wedge, moat and ask — annotated from 200 decks that raised.",
+      "author": "Narrative Lab",
+      "hue": 205,
+      "tags": [
+        "Deck",
+        "Story"
+      ]
+    },
+    {
+      "id": "lt-4",
+      "title": "Regulatory Readiness: Fintech & Health",
+      "level": "Advanced",
+      "mins": 210,
+      "lessons": 10,
+      "desc": "Sandbox strategy, FLDG constructs, ABDM integration, and the licensing map founders misread most.",
+      "author": "IndusLaw × RBIH alumni",
+      "hue": 96,
+      "tags": [
+        "Compliance"
+      ]
+    },
+    {
+      "id": "lt-5",
+      "title": "B2B GTM: Founder-Led Sales to Scale",
+      "level": "Growth",
+      "mins": 160,
+      "lessons": 8,
+      "desc": "ICP discipline, pricing conversations, hiring the first AE, and the transition investors underwrite.",
+      "author": "Kavitha Rao · Meridian",
+      "hue": 326,
+      "tags": [
+        "GTM",
+        "Sales"
+      ]
+    },
+    {
+      "id": "lt-6",
+      "title": "Cap Tables & ESOPs Without Regret",
+      "level": "Core",
+      "mins": 90,
+      "lessons": 5,
+      "desc": "Dilution math, pool sizing, co-founder vesting, and the clauses that matter three rounds later.",
+      "author": "Trust & Equity Project",
+      "hue": 18,
+      "tags": [
+        "Legal",
+        "Equity"
+      ]
+    }
+  ],
+  "schemes": [
+    {
+      "id": "sc-1",
+      "name": "Startup India Seed Fund Scheme (SISFS)",
+      "by": "DPIIT · Ministry of Commerce",
+      "benefit": "Up to ₹20 L grants · ₹50 L investment via incubators",
+      "elig": [
+        "DPIIT-recognised, <2 yrs incorporated",
+        "Not raised >₹10 L monetary",
+        "31%+ Indian shareholding"
+      ],
+      "sector": [
+        "All"
+      ],
+      "stage": "Idea — Pre-Seed",
+      "deadline": "Rolling",
+      "hue": 36
+    },
+    {
+      "id": "sc-2",
+      "name": "Fund of Funds for Startups (FFS)",
+      "by": "SIDBI",
+      "benefit": "₹10,000 Cr corpus deployed via SEBI AIFs",
+      "elig": [
+        "Apply through SIDBI-backed AIFs",
+        "DPIIT recognition preferred",
+        "No direct application"
+      ],
+      "sector": [
+        "All"
+      ],
+      "stage": "Seed — Growth",
+      "deadline": "Via AIFs",
+      "hue": 205
+    },
+    {
+      "id": "sc-3",
+      "name": "CGTMSE Credit Guarantee",
+      "by": "MSME Ministry × SIDBI",
+      "benefit": "Guarantee cover up to ₹5 Cr on collateral-free loans",
+      "elig": [
+        "Udyam-registered MSME",
+        "Via 130+ member lenders",
+        "New + existing units"
+      ],
+      "sector": [
+        "Manufacturing",
+        "Services"
+      ],
+      "stage": "Early revenue",
+      "deadline": "Rolling",
+      "hue": 96
+    },
+    {
+      "id": "sc-4",
+      "name": "Karnataka Elevate 2025",
+      "by": "Govt. of Karnataka · K-Tech",
+      "benefit": "₹25 L non-dilutive grant + incubation",
+      "elig": [
+        "Karnataka-registered",
+        "Pitch via Unnati/Elevate",
+        "Sector-special tracks"
+      ],
+      "sector": [
+        "DeepTech",
+        "Rural",
+        "Women-led"
+      ],
+      "stage": "Idea — Seed",
+      "deadline": "Apr 2025",
+      "hue": 268
+    },
+    {
+      "id": "sc-5",
+      "name": "TIDE 2.0 — MeitY",
+      "by": "Ministry of Electronics & IT",
+      "benefit": "₹4–7 L EIR grants + lab access via 51 incubators",
+      "elig": [
+        "Tech prototype stage",
+        "Apply to listed incubators",
+        "IP in India preferred"
+      ],
+      "sector": [
+        "ICT",
+        "IoT",
+        "AI/ML"
+      ],
+      "stage": "Prototype",
+      "deadline": "Incubator-wise",
+      "hue": 150
+    },
+    {
+      "id": "sc-6",
+      "name": "Stand-Up India",
+      "by": "Banking network · DFS",
+      "benefit": "Composite loans ₹10 L – ₹1 Cr",
+      "elig": [
+        "SC/ST or women promoters",
+        "Greenfield enterprise",
+        "85% project cost ceiling"
+      ],
+      "sector": [
+        "All"
+      ],
+      "stage": "Greenfield",
+      "deadline": "Rolling",
+      "hue": 326
+    }
+  ],
+  "news": [
+    {
+      "id": "nw-1",
+      "title": "Indian startup funding hits ₹96,000 Cr annualised run-rate — seed leads the recovery",
+      "src": "VentureSetu Research",
+      "ts": 1788431073682,
+      "tag": "Funding Pulse",
+      "desc": "Seed-stage cheques grew 38% QoQ while Series B+ stayed selective. Fintech, SaaS and climate absorbed 61% of all capital. Our monthly barometer of 410 disclosed deals.",
+      "mins": 6,
+      "featured": true
+    },
+    {
+      "id": "nw-2",
+      "title": "RBI Innovation Hub opens 2025 cohort for lending and payments infra",
+      "src": "Regulatory Desk",
+      "ts": 1788416673682,
+      "tag": "Policy",
+      "desc": "Applications remain open for six weeks; this cycle adds a dedicated track for MSME cash-flow underwriting models.",
+      "mins": 4,
+      "featured": false
+    },
+    {
+      "id": "nw-3",
+      "title": "Why audit-grade AI is absorbing BFSI automation budgets",
+      "src": "Sector Maps",
+      "ts": 1788355473682,
+      "tag": "Deep Dive",
+      "desc": "Banks now demand deterministic extraction envelopes around LLM reasoning. The winners are rebuilds, not wrappers.",
+      "mins": 8,
+      "featured": false
+    },
+    {
+      "id": "nw-4",
+      "title": "DPIIT recognition crosses 1.57 lakh startups; Tier-2/3 share rises to 48%",
+      "src": "Data Desk",
+      "ts": 1788355473682,
+      "tag": "Ecosystem",
+      "desc": "Recognition benefits — self-certification, tax exemptions, fast-track patents — remain under-used outside metros.",
+      "mins": 3,
+      "featured": false
+    },
+    {
+      "id": "nw-5",
+      "title": "Vernacular commerce GMV grows 3.1× — voice-first funnels lead conversion",
+      "src": "Sector Maps",
+      "ts": 1788269073682,
+      "tag": "Consumer",
+      "desc": "The post-UPI wave: discovery in 9 languages, checkout in 30 seconds, and cre dit habits forming in kirana ledgers.",
+      "mins": 5,
+      "featured": false
+    },
+    {
+      "id": "nw-6",
+      "title": "Green grants: blended finance structures unlock ₹2,100 Cr for climate pilots",
+      "src": "Climate Desk",
+      "ts": 1788269073682,
+      "tag": "Climate",
+      "desc": "First-loss capital from philanthropy is de-risking agri and EV infrastructure rounds for commercial funds.",
+      "mins": 6,
+      "featured": false
+    },
+    {
+      "id": "nw-7",
+      "title": "ESOP taxation reform enters consultation — startups push for exercise-time deferral",
+      "src": "Policy Watch",
+      "ts": 1788182673682,
+      "tag": "Policy",
+      "desc": "Founder collectives propose taxing at liquidity events instead of exercise; feedback window closes next month.",
+      "mins": 4,
+      "featured": false
+    },
+    {
+      "id": "nw-8",
+      "title": "Inside the 36-hour close: finance automation teardowns from 12 mid-market CFOs",
+      "src": "Operator Series",
+      "ts": 1788096273682,
+      "tag": "Playbook",
+      "desc": "The exact stack — capture, routing, reconciliation, audit trail — and where humans stay in the loop.",
+      "mins": 9,
+      "featured": false
+    }
+  ],
+  "faqs": [
+    {
+      "q": "Who can join VentureSetu?",
+      "a": "Founders who have incorporated (or are actively building) a startup, and investors deploying capital — angels, micro-VCs, funds and syndicate leads. Every profile passes verification: founders confirm incorporation or DPIIT status, investors confirm cheque history. Admins review edge cases within 48 hours.",
+      "cat": "Getting Started"
+    },
+    {
+      "q": "Is VentureSetu free for founders?",
+      "a": "Creating a startup profile, receiving matches, joining the founder community and one active connection are free forever. Growth plans unlock unlimited connections, advanced analytics on deck views and priority placement in investor discovery.",
+      "cat": "Getting Started"
+    },
+    {
+      "q": "How is this different from AngelList or LinkedIn?",
+      "a": "We are not a directory. VentureSetu runs a stateful lifecycle — Discover → Evaluate → Connect → Discuss → Fund → Track — with verified financials, controlled deck sharing, Discord-grade private rooms and a funding tracker that persists past the handshake.",
+      "cat": "Getting Started"
+    },
+    {
+      "q": "How does AI matching actually work?",
+      "a": "Four compatibility axes are scored transparently: sector overlap, stage fit, cheque-range vs your ask, and geography. Signals like traction velocity and investor response rates tune the final score. Every match shows its full breakdown — we never present a number without the \"why\".",
+      "cat": "Matching & AI"
+    },
+    {
+      "q": "Can I appear more often in investor recommendations?",
+      "a": "Yes — readiness drives ranking. Complete financials, an uploaded deck, verified traction metrics and recent milestones compound your score. Profiles above 75 readiness appear in ~4× more investor feeds.",
+      "cat": "Matching & AI"
+    },
+    {
+      "q": "Who can see my pitch deck and financials?",
+      "a": "Only you by default. Deck sharing is per-connection and revocable — you grant access after accepting a connection, and watermarked previews prevent redistribution. Aggregated, anonymised stats (like \"opened 3× this week\") are the only signals the other side ever sees without grant.",
+      "cat": "Security & Privacy"
+    },
+    {
+      "q": "How are sessions and passwords secured?",
+      "a": "Passwords are hashed with SHA-256 (salted per-user, strengthened at rest). Sessions use expiring tokens with refresh on activity, optional MFA via 6-digit codes, role-based access on every route, and a full audit log — sign-ins, connection events and admin actions are recorded.",
+      "cat": "Security & Privacy"
+    },
+    {
+      "q": "Why are founder and investor communities separate?",
+      "a": "Deliberately. Founders need a safe room for term-sheet questions; investors need one for allocation candidness. Cross-pollination happens only through the structured connection flow, where both parties consent. Membership is enforced by role at the platform level.",
+      "cat": "Communities"
+    },
+    {
+      "q": "What is the Funding Tracker?",
+      "a": "A living timeline of your round: milestones, amounts and dates, connected to your real metrics. Founders see progress toward their target with runway context; investors see a pipeline view of every opportunity from intro to funded.",
+      "cat": "Funding & Tracking"
+    },
+    {
+      "q": "Does VentureSetu take a success fee?",
+      "a": "No placement or success fees. We monetise through growth subscriptions and investor intelligence products. Capital moves directly between parties — we never touch the money.",
+      "cat": "Funding & Tracking"
+    }
+  ],
+  "market": [
+    {
+      "id": "mp-1",
+      "title": "GeM Seller Onboarding Sprint",
+      "org": "Government e-Marketplace",
+      "kind": "Public Procurement",
+      "desc": "A 4-week guided sprint to win your first government purchase orders — catalogue listing, bid mechanics and payment-cycle playbooks.",
+      "points": [
+        "GeM + Udyam registration done-for-you",
+        "Bid library of 120 won tenders",
+        "Dedicated category mapping session"
+      ],
+      "hue": 36,
+      "tags": [
+        "B2G",
+        "Certification"
+      ]
+    },
+    {
+      "id": "mp-2",
+      "title": "Enterprise Pilot Exchange",
+      "org": "VentureSetu Corporate Network",
+      "kind": "Corporate Access",
+      "desc": "Curated 1:1 meetings with innovation teams at 40+ enterprises running active pilots in fintech, manufacturing and retail.",
+      "points": [
+        "2 curated intros per month",
+        "Pilot-to-contract legal templates",
+        "Reference-architecture reviews"
+      ],
+      "hue": 205,
+      "tags": [
+        "Pilots",
+        "B2B"
+      ]
+    },
+    {
+      "id": "mp-3",
+      "title": "Export Readiness — EU & GCC",
+      "org": "FIEO × VentureSetu",
+      "kind": "Export",
+      "desc": "From IEC to first container: CE/GCC compliance mapping, logistics corridor selection and DDP pricing strategy.",
+      "points": [
+        "Compliance gap report in 10 days",
+        "Freight-forwarder rate card access",
+        "Buyer matching at 2 trade fairs"
+      ],
+      "hue": 96,
+      "tags": [
+        "Export",
+        "Compliance"
+      ]
+    },
+    {
+      "id": "mp-4",
+      "title": "Retail Shelf Access Program",
+      "org": "Trade Guild Alliance",
+      "kind": "Distribution",
+      "desc": "Modern-trade and GT distributors accepting startup brands this quarter, with margin benchmarks and listing-fee negotiation support.",
+      "points": [
+        "12 distributor intros per cohort",
+        "Listing-fee benchmarks by category",
+        "Merchandising audit before pitch"
+      ],
+      "hue": 18,
+      "tags": [
+        "D2C",
+        "Retail"
+      ]
+    },
+    {
+      "id": "mp-5",
+      "title": "Bank Partnership Lounges",
+      "org": "RBIH Community × 4 banks",
+      "kind": "Fintech Rails",
+      "desc": "Structured office hours with bank innovation desks evaluating co-lending, UPI, and BaaS partnerships.",
+      "points": [
+        "Fit assessment against live RFPs",
+        "Sandbox application review",
+        "Security-review readiness kit"
+      ],
+      "hue": 268,
+      "tags": [
+        "Fintech",
+        "Banking"
+      ]
+    },
+    {
+      "id": "mp-6",
+      "title": "Global Demo Corridors",
+      "org": "VentureSetu International",
+      "kind": "Expansion",
+      "desc": "Week-long curated corridors to Singapore and the Bay Area: customer meetings, partner channels and relocation counsel.",
+      "points": [
+        "10+ pre-qualified meetings",
+        "Entity & visa counsel sessions",
+        "Alumni founder host network"
+      ],
+      "hue": 326,
+      "tags": [
+        "US",
+        "SEA",
+        "GTM"
+      ]
+    }
+  ],
+  "channels": [
+    {
+      "id": "fc-1",
+      "role": "founder",
+      "name": "welcome-and-wins",
+      "desc": "Announcements, milestones, and victory laps",
+      "order": 0,
+      "kind": "text"
+    },
+    {
+      "id": "fc-2",
+      "role": "founder",
+      "name": "fundraising-war-room",
+      "desc": "Term sheets, valuations, diligence battle stories",
+      "order": 1,
+      "kind": "text"
+    },
+    {
+      "id": "fc-3",
+      "role": "founder",
+      "name": "pitch-feedback",
+      "desc": "Drop your deck — get honest, structured critique",
+      "order": 2,
+      "kind": "text"
+    },
+    {
+      "id": "fc-4",
+      "role": "founder",
+      "name": "growth-and-gtm",
+      "desc": "Playbooks that actually moved revenue",
+      "order": 3,
+      "kind": "text"
+    },
+    {
+      "id": "fc-5",
+      "role": "founder",
+      "name": "hiring-and-culture",
+      "desc": "Comp benchmarks, offers, hard people calls",
+      "order": 4,
+      "kind": "text"
+    },
+    {
+      "id": "fc-6",
+      "role": "founder",
+      "name": "founder-vent-circle",
+      "desc": "Confidential. What's said here stays here.",
+      "order": 5,
+      "kind": "text"
+    },
+    {
+      "id": "fc-v1",
+      "role": "founder",
+      "name": "Pitch Practice Lounge",
+      "desc": "Live pitch reps — camera optional",
+      "order": 6,
+      "kind": "voice"
+    },
+    {
+      "id": "fc-v2",
+      "role": "founder",
+      "name": "Chai & Capital — Office Hours",
+      "desc": "Thursdays 5pm · investors drop in",
+      "order": 7,
+      "kind": "voice"
+    },
+    {
+      "id": "ic-1",
+      "role": "investor",
+      "name": "deal-flow-desk",
+      "desc": "What crossed your desk this week — verbatim",
+      "order": 8,
+      "kind": "text"
+    },
+    {
+      "id": "ic-2",
+      "role": "investor",
+      "name": "due-diligence-library",
+      "desc": "Checklists, red flags, forensic vendors that deliver",
+      "order": 9,
+      "kind": "text"
+    },
+    {
+      "id": "ic-3",
+      "role": "investor",
+      "name": "sector-deep-dives",
+      "desc": "Monthly thesis maps — this month: agentic AI",
+      "order": 10,
+      "kind": "text"
+    },
+    {
+      "id": "ic-4",
+      "role": "investor",
+      "name": "co-investment-board",
+      "desc": "Syndication opportunities and allocation swaps",
+      "order": 11,
+      "kind": "text"
+    },
+    {
+      "id": "ic-5",
+      "role": "investor",
+      "name": "portfolio-support",
+      "desc": "Operator asks from our companies — intros, hires, pilots",
+      "order": 12,
+      "kind": "text"
+    },
+    {
+      "id": "ic-6",
+      "role": "investor",
+      "name": "lp-updates-and-market",
+      "desc": "Macro, exits, LP sentiment — signal only",
+      "order": 13,
+      "kind": "text"
+    },
+    {
+      "id": "ic-v1",
+      "role": "investor",
+      "name": "Morning Deals Briefing",
+      "desc": "Weekdays 9:30am · 15-min standup",
+      "order": 14,
+      "kind": "voice"
+    },
+    {
+      "id": "ic-v2",
+      "role": "investor",
+      "name": "Allocation Circle",
+      "desc": "Syndicate coordination — members only",
+      "order": 15,
+      "kind": "voice"
+    }
+  ]
+}

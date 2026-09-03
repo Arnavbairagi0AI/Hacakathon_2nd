@@ -1,0 +1,343 @@
+rules_version = '2';
+/* =====================================================================
+   VentureSetu — Firestore Security Rules (production)
+   ---------------------------------------------------------------------
+   Design principles:
+   *  users/{uid} and its subcollections (notices, rsvps, channelReads,
+      progress) are PRIVATE: only the owner (or an admin) may read/write.
+   *  startups & investors are platform LISTINGS: any active signed-in
+      member may read them (the marketplace requires browsing). A founder
+      may only WRITE startups they own; an investor may only WRITE their
+      own investor profile (which lives at investors/{uid}).
+   *  Deck BYTES are protected in Storage rules by startup.deck.sharedWith;
+      the deck metadata rides on the startup doc, but the file is gated.
+   *  connections & threads are PARTICIPANT-ONLY: nobody but the two
+      counterparties (plus admins for trust & safety) can read them.
+   *  Cross-user notification writes (connection accepted, deck granted)
+      are only legal when a matching ACCEPTED connection doc exists and
+      the notice lands with the OTHER party of that connection.
+   *  content/* is public editorial material; writes are admin-only except
+      the +-1 rsvpCount live counter on events, which any active member
+      may move while RSVPing.
+   *  audits are written by members (Spark has no free server writes),
+      readable ONLY by admins, and immutable.
+   *  flags are created by members and readable/resolved by admins only.
+   ===================================================================== */
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /* --------------------------------------------------- helpers ---- */
+    /* NOTE: get() on a missing doc yields an object without `.data`, so */
+    /* every helper null-guards before touching `.data`. Each helper is  */
+    /* exactly ONE get() so per-document list reads stay within the      */
+    /* rules get()-call budget.                                          */
+    function signedIn() { return request.auth != null; }
+
+    function uDoc(uid) {
+      return get(/databases/$(database)/documents/users/$(uid));
+    }
+    function uData(uid) {
+      let d = uDoc(uid);
+      return (d != null && d.data != null) ? d.data : null;
+    }
+
+    function roleOf(uid) {
+      let d = uData(uid);
+      return d != null ? d.role : null;
+    }
+    function isActive(uid) {
+      let d = uData(uid);
+      return d != null && d.status == 'active';
+    }
+
+    function isActiveMember(uid) {
+      return signedIn() && isActive(uid)
+             && roleOf(uid) in ['founder', 'investor', 'admin'];
+    }
+
+    function isAdmin(uid) {
+      return signedIn() && isActive(uid) && roleOf(uid) == 'admin';
+    }
+
+    function sData(sid) {
+      let d = get(/databases/$(database)/documents/startups/$(sid));
+      return (d != null && d.data != null) ? d.data : null;
+    }
+    function startupOwner(sid) {
+      let d = sData(sid);
+      return d != null ? d.ownerId : null;
+    }
+
+    function cData(cid) {
+      let d = get(/databases/$(database)/documents/connections/$(cid));
+      return (d != null && d.data != null) ? d.data : null;
+    }
+
+    /* Is uid one of the two counterparties of an ACCEPTED connection? */
+    function isConnParty(cid, uid) {
+      let c = cData(cid);
+      return c != null && c.status == 'accepted'
+        && (c.investorId == uid || startupOwner(c.startupId) == uid);
+    }
+
+    /* Is uid a counterparty of the connection regardless of its state?  */
+    /* (Thread creation happens in the SAME batch that flips the         */
+    /*  connection to accepted, and rules read pre-batch state, so the   */
+    /*  accepted check cannot run there — participant gating is enough.) */
+    function isConnPartyAny(cid, uid) {
+      let c = cData(cid);
+      return c != null
+        && (c.investorId == uid || startupOwner(c.startupId) == uid);
+    }
+
+    /* The counterparty of uid inside connection cid. */
+    function otherConnParty(cid, uid) {
+      let c = cData(cid);
+      return c.investorId == uid ? startupOwner(c.startupId) : c.investorId;
+    }
+
+    /* Channel meta docs carry role in {'founder','investor'} — a member */
+    /* may only use channels of their own role.                          */
+    function channelRole(cid) {
+      let d = get(/databases/$(database)/documents/channels/$(cid));
+      return (d != null && d.data != null) ? d.data.role : null;
+    }
+    function canUseChannel(cid) {
+      return isActiveMember(request.auth.uid)
+        && roleOf(request.auth.uid) == channelRole(cid);
+    }
+
+    /* ----------------------------------------------- users/{uid} ---- */
+    match /users/{uid} {
+      allow read:   if signedIn() && (uid == request.auth.uid || isAdmin(request.auth.uid));
+      allow create: if signedIn()
+        && uid == request.auth.uid
+        && request.auth.token.email_verified == true
+        && request.resource.data.id == uid
+        && request.resource.data.role in ['founder', 'investor']
+        && request.resource.data.status == 'active'
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if isAdmin(request.auth.uid)
+        || (signedIn() && uid == request.auth.uid && isActive(request.auth.uid)
+            && request.resource.data.id == resource.data.id
+            && request.resource.data.email == resource.data.email
+            && request.resource.data.role == resource.data.role
+            && request.resource.data.status == resource.data.status
+            && request.resource.data.verified == resource.data.verified
+            && request.resource.data.createdAt == resource.data.createdAt);
+      allow delete: if isAdmin(request.auth.uid);
+
+      /* ----- users/{uid}/notices — private inbox. Cross-user creates
+              must target the OTHER party of an accepted connection. -- */
+      match /notices/{nid} {
+        allow read:   if signedIn() && (uid == request.auth.uid || isAdmin(request.auth.uid));
+        allow create: if isAdmin(request.auth.uid)
+          || (isActiveMember(request.auth.uid)
+              && (uid == request.auth.uid                               // self-notice
+                  || (request.resource.data.connId is string            // connection-gated notice
+                      && request.resource.data.by == request.auth.uid
+                      && request.resource.data.to == uid
+                      && isConnParty(request.resource.data.connId, request.auth.uid)
+                      && otherConnParty(request.resource.data.connId, request.auth.uid) == uid)));
+        allow update: if signedIn() && uid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read'])
+          && request.resource.data.read == true;
+        allow delete: if isAdmin(request.auth.uid);
+      }
+
+      /* ----- users/{uid}/rsvps — owner-only; backs the event counter */
+      match /rsvps/{eventId} {
+        allow read:   if signedIn() && uid == request.auth.uid;
+        allow create: if signedIn() && uid == request.auth.uid && isActive(request.auth.uid)
+          && request.resource.data.keys().hasOnly(['bookedAt'])
+          && request.resource.data.bookedAt is number;
+        allow delete: if signedIn() && uid == request.auth.uid && isActive(request.auth.uid);
+        allow update: if false;
+      }
+
+      /* ----- users/{uid}/channelReads — per-channel unread watermark */
+      match /channelReads/{channelId} {
+        allow read:   if signedIn() && uid == request.auth.uid;
+        allow create: if signedIn() && uid == request.auth.uid && isActive(request.auth.uid)
+          && request.resource.data.keys().hasOnly(['lastRead'])
+          && request.resource.data.lastRead is number;
+        allow update: if signedIn() && uid == request.auth.uid && isActive(request.auth.uid)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['lastRead'])
+          && request.resource.data.lastRead is number;
+        allow delete: if isAdmin(request.auth.uid);
+      }
+
+      /* ----- users/{uid}/progress — lesson progress, owner-only       */
+      match /progress/{key} {
+        allow read:   if signedIn() && uid == request.auth.uid;
+        allow write:  if signedIn() && uid == request.auth.uid && isActive(request.auth.uid);
+      }
+    }
+
+    /* ----------------------------------------------- startups/{sid} -- */
+    match /startups/{sid} {
+      allow read:   if isActiveMember(request.auth.uid);
+      allow create: if isActiveMember(request.auth.uid)
+        && roleOf(request.auth.uid) == 'founder'
+        && request.resource.data.ownerId == request.auth.uid
+        && request.resource.data.id == sid;
+      allow update: if isAdmin(request.auth.uid)
+        || (isActiveMember(request.auth.uid)
+            && resource.data.ownerId == request.auth.uid
+            && request.resource.data.ownerId == resource.data.ownerId);
+      allow delete: if isAdmin(request.auth.uid);
+    }
+
+    /* ----------------------------------------------- investors/{iid} */
+    match /investors/{iid} {
+      allow read:   if isActiveMember(request.auth.uid);
+      // The investor profile lives at investors/{uid} — it IS their own doc.
+      allow create: if isActiveMember(request.auth.uid)
+        && iid == request.auth.uid
+        && roleOf(request.auth.uid) == 'investor'
+        && request.resource.data.id == iid
+        && request.resource.data.userId == iid
+        && request.resource.data.verified == false;
+      allow update: if isAdmin(request.auth.uid)
+        || (isActiveMember(request.auth.uid) && iid == request.auth.uid
+            && request.resource.data.id == resource.data.id
+            && request.resource.data.userId == resource.data.userId
+            && request.resource.data.verified == resource.data.verified   // no self-verification
+            && request.resource.data.active == resource.data.active);
+      allow delete: if isAdmin(request.auth.uid);
+    }
+
+    /* ----------------------------------------------- connections/{cid} */
+    match /connections/{cid} {
+      allow read:   if isActiveMember(request.auth.uid)
+        && (resource.data.investorId == request.auth.uid
+            || startupOwner(resource.data.startupId) == request.auth.uid
+            || isAdmin(request.auth.uid));
+      allow create: if isActiveMember(request.auth.uid)
+        && (request.resource.data.investorId == request.auth.uid
+            || startupOwner(request.resource.data.startupId) == request.auth.uid)
+        && request.resource.data.status == 'pending'
+        && request.resource.data.stage == 'intro'
+        && request.resource.data.fromRole in ['founder', 'investor'];
+      allow update: if isAdmin(request.auth.uid)
+        || (isActiveMember(request.auth.uid)
+            && (resource.data.investorId == request.auth.uid
+                || startupOwner(resource.data.startupId) == request.auth.uid)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'stage'])
+            && (request.resource.data.status == resource.data.status
+                || resource.data.status == 'pending'));                 // pending -> accepted|declined only
+      allow delete: if isAdmin(request.auth.uid);
+    }
+
+    /* ------------------------------------------------ threads/{tid} -- */
+    match /threads/{tid} {
+      allow read:   if isActiveMember(request.auth.uid)
+        && (resource.data.pairIds.hasAny([request.auth.uid]) || isAdmin(request.auth.uid));
+      allow create: if isActiveMember(request.auth.uid)
+        && isConnPartyAny(request.resource.data.connId, request.auth.uid)
+        && request.resource.data.pairIds.hasAny([request.auth.uid])
+        && request.resource.data.pairIds.size() == 2;
+      allow update: if isAdmin(request.auth.uid)
+        || (isActiveMember(request.auth.uid)
+            && resource.data.pairIds.hasAny([request.auth.uid])
+            && request.resource.data.pairIds == resource.data.pairIds
+            && request.resource.data.connId == resource.data.connId
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['typingBy'])
+            && request.resource.data.typingBy[request.auth.uid] is number);
+      allow delete: if isAdmin(request.auth.uid);
+
+      /* ---- threads/{tid}/msgs — private-room messages -------------- */
+      match /msgs/{mid} {
+        allow read:   if isActiveMember(request.auth.uid)
+          && (get(/databases/$(database)/documents/threads/$(tid)).data.pairIds.hasAny([request.auth.uid])
+              || isAdmin(request.auth.uid));
+        allow create: if isActiveMember(request.auth.uid)
+          && get(/databases/$(database)/documents/threads/$(tid)).data.pairIds.hasAny([request.auth.uid])
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.id == mid
+          && request.resource.data.ts is number;
+        allow update: if isAdmin(request.auth.uid)
+          || (isActiveMember(request.auth.uid)
+              && get(/databases/$(database)/documents/threads/$(tid)).data.pairIds.hasAny([request.auth.uid])
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']));
+        allow delete: if isAdmin(request.auth.uid);
+      }
+    }
+
+    /* ------------------------------------------------ channels/{cid} */
+    /* NOTE: the meta-doc read rule uses resource.data.role (the doc    */
+    /* being read) instead of canUseChannel(): get() on the SAME doc    */
+    /* returns null while a collection LIST query is being evaluated.   */
+    match /channels/{cid} {
+      allow read:   if isAdmin(request.auth.uid)
+        || (isActiveMember(request.auth.uid)
+            && roleOf(request.auth.uid) == resource.data.role);
+      allow write:  if isAdmin(request.auth.uid);
+
+      match /msgs/{mid} {
+        allow read:   if canUseChannel(cid) || isAdmin(request.auth.uid);
+        allow create: if canUseChannel(cid)
+          && request.resource.data.authorId == request.auth.uid
+          && request.resource.data.ts is number;
+        allow update: if isAdmin(request.auth.uid)
+          || (canUseChannel(cid)
+              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['reactions']));
+        allow delete: if isAdmin(request.auth.uid);
+      }
+
+      match /voice/{vid} {
+        allow read:   if canUseChannel(cid) || isAdmin(request.auth.uid);
+        allow create: if canUseChannel(cid) && vid == request.auth.uid
+          && request.resource.data.keys().hasOnly(['name', 'hue', 'joinedAt', 'muted']);
+        allow update: if canUseChannel(cid) && vid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['muted']);
+        allow delete: if canUseChannel(cid) && vid == request.auth.uid;
+      }
+    }
+
+    /* ------------------------------------------------ content/{docid} */
+    /* Public editorial material (events, tracks, schemes, news, faqs,  */
+    /* market) in ONE collection, discriminated by the `section` field. */
+    /* Reads are public; writes are admin-only — EXCEPT the live        */
+    /* rsvpCount counter on section == 'events' docs, which any active  */
+    /* member may move by exactly +-1 as they RSVP/cancel.              */
+    match /content/{docid} {
+      allow read:   if true;
+      allow create: if isAdmin(request.auth.uid);
+      allow update: if isAdmin(request.auth.uid)
+        || (request.resource.data.section == 'events'
+            && resource.data.section == 'events'
+            && isActiveMember(request.auth.uid)
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['rsvpCount'])
+            && (request.resource.data.rsvpCount == resource.data.rsvpCount + 1
+                || request.resource.data.rsvpCount == resource.data.rsvpCount - 1)
+            && request.resource.data.rsvpCount >= 0);
+      allow delete: if isAdmin(request.auth.uid);
+    }
+
+    /* ------------------------------------------------- audits/{aid} -- */
+    /* Members append audit lines (client-side, Spark-compatible). The  */
+    /* audit trail is readable ONLY by admins and immutable to all.     */
+    match /audits/{aid} {
+      allow read:   if isAdmin(request.auth.uid);
+      allow create: if signedIn()
+        && request.auth.token.email == request.resource.data.actor
+        && request.resource.data.ts is number
+        && request.resource.data.action is string
+        && request.resource.data.target is string;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    /* --------------------------------------------------- flags/{fid} - */
+    match /flags/{fid} {
+      allow read:   if isAdmin(request.auth.uid);
+      allow create: if isActiveMember(request.auth.uid)
+        && request.resource.data.status == 'open'
+        && request.resource.data.ts is number;
+      allow update: if isAdmin(request.auth.uid);
+      allow delete: if isAdmin(request.auth.uid);
+    }
+  }
+}
